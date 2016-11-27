@@ -9,14 +9,14 @@
 # Learn more about module testing here:
 # https://docs.puppet.com/guides/tests_smoke.html
 #
-#psrepository { 'Hiscox':
-#    ensure              => present,
-#    source_location     => 'https://hiscox-nugetserver.azurewebsites.net/nuget/',
-#    installation_policy => 'trusted',
-#}
-
-powershellmodule { 'psexcel':
-    ensure  => absent,
-    version => '1.0.2',
-    repository => 'psgallery',
+psrepository { 'Hiscox':
+    ensure              => absent,
+    source_location     => 'https://hiscox-nugetserver.azurewebsites.net/nuget/',
+    installation_policy => 'trusted',
 }
+
+#powershellmodule { 'psexcel':
+#    ensure  => absent,
+#    version => '1.0.2',
+#    repository => 'psgallery',
+#}
