@@ -9,8 +9,13 @@
 # Learn more about module testing here:
 # https://docs.puppet.com/guides/tests_smoke.html
 #
-psrepository { 'Hiscox':
-    ensure              => present,
-    source_location     => 'http://blah.net/nuget/',
-    installation_policy => 'trusted',
+#psrepository { 'Hiscox':
+#    ensure              => present,
+#    source_location     => 'https://hiscox-nugetserver.azurewebsites.net/nuget/',
+#    installation_policy => 'trusted',
+#}
+
+powershellmodule { 'pspuppet':
+    ensure     => present,
+    repository => 'hiscox',
 }
