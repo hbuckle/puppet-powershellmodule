@@ -15,7 +15,7 @@
 #    installation_policy => 'trusted',
 #}
 
-powershellmodule { 'pspuppet':
-    ensure     => present,
-    repository => 'hiscox',
+powershellmodule { 'hiscox-azure':
+    ensure  => present,
+    version => 'latest',
 }

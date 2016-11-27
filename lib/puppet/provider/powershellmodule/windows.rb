@@ -26,7 +26,7 @@ Puppet::Type.type(:powershellmodule).provide(:windows) do
 
   def create
     case resource[:version]
-      when nil
+      when nil || 'latest'
         command = "Install-Module #{@resource[:name]} -Force"
       else
         command = "Install-Module #{@resource[:name]} -RequiredVersion #{@resource[:version]} -Force"
@@ -42,14 +42,34 @@ Puppet::Type.type(:powershellmodule).provide(:windows) do
   end
 
   def version
-    command = "$mod = Get-InstalledModule #{@resource[:name]} -RequiredVersion #{@resource[:version]} -ErrorAction SilentlyContinue; try{$mod.Version.ToString()}catch{''}"
-    result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
-    debug(result)
-    result.downcase.strip
+    case resource[:version]
+      when 'latest'
+        latestcommand = "$mod = Find-Module #{@resource[:name]}; $mod.Version.ToString()"
+        latestresult = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', latestcommand])
+        actualcommand = "$mod = Get-InstalledModule #{@resource[:name]}; $mod.Version.ToString()"
+        actualresult = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', actualcommand])
+        debug(latestresult)
+        if latestresult.downcase.strip == actualresult.downcase.strip
+          return 'latest'
+        else
+          notice("Latest version available is #{latestresult.downcase.strip}")
+          return actualresult.downcase.strip
+        end
+      else
+        specificcommand = "$mod = Get-InstalledModule #{@resource[:name]} -RequiredVersion #{@resource[:version]} -ErrorAction SilentlyContinue; try{$mod.Version.ToString()}catch{''}"
+        specificresult = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
+        debug(specificresult)
+        specificresult.downcase.strip
+    end
   end
 
   def version=(value)
-    command = "Install-Module #{@resource[:name]} -RequiredVersion #{value} -Force"
+    case value
+      when 'latest'
+        command = "Update-Module #{@resource[:name]} -Force"
+      else
+        command = "Install-Module #{@resource[:name]} -RequiredVersion #{value} -Force"
+    end
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
     debug(result)
   end
