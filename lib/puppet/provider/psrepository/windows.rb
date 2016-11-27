@@ -14,7 +14,7 @@ Puppet::Type.type(:psrepository).provide(:windows) do
   mk_resource_methods
 
   def self.instances
-    command = "(Get-PSRepository).foreach({\"$($_.Name),$($_.SourceLocation),$($_.InstallationPolicy)\"})"
+    command = "@(Get-PSRepository).foreach({\"$($_.Name),$($_.SourceLocation),$($_.InstallationPolicy)\"})"
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
     debug(result)
     result.lines.each_slice(3).collect do |repo|
@@ -43,20 +43,24 @@ Puppet::Type.type(:psrepository).provide(:windows) do
   def destroy
     command = "Unregister-PSRepository #{@resource[:name]}"
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
+    @property_hash.clear
   end
 
   def create
     command = "Register-PSRepository #{@resource[:name]} -SourceLocation #{@resource[:source_location]} -InstallationPolicy #{@resource[:installation_policy]}"
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
+    @property_hash[:ensure] = :present
   end
 
   def source_location=(value)
     command = "Set-PSRepository #{@resource[:name]} -SourceLocation #{value}"
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
+    @property_hash[:source_location] = value
   end
 
   def installation_policy=(value)
     command = "Set-PSRepository #{@resource[:name]} -InstallationPolicy #{value}"
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
+    @property_hash[:installation_policy] = value
   end
 end

@@ -9,10 +9,14 @@
 # Learn more about module testing here:
 # https://docs.puppet.com/guides/tests_smoke.html
 #
-psrepository { 'Hiscox':
+psrepository { 'PSGallery':
     ensure              => present,
-    source_location     => 'https://hiscox-nugetserver.azurewebsites.net/nuget/',
+    source_location     => 'https://www.powershellgallery.com/api/v2/',
     installation_policy => 'untrusted',
+}
+
+resources { 'psrepository':
+    purge => true,
 }
 
 #powershellmodule { 'psexcel':
