@@ -10,9 +10,9 @@
 # https://docs.puppet.com/guides/tests_smoke.html
 #
 psrepository { 'Hiscox':
-    ensure              => absent,
+    ensure              => present,
     source_location     => 'https://hiscox-nugetserver.azurewebsites.net/nuget/',
-    installation_policy => 'trusted',
+    installation_policy => 'untrusted',
 }
 
 #powershellmodule { 'psexcel':

@@ -28,10 +28,15 @@ Puppet::Type.type(:psrepository).provide(:windows) do
     end
   end
 
+  def self.prefetch(resources)
+    instances.each do |prov|
+      if resource = resources[prov.name]
+        resource.provider = prov
+      end
+    end
+  end
+
   def exists?
-    #command = "$rp = Get-PSRepository #{@resource[:name]}; $rp.Name"
-    #result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
-    #result.strip == resource[:name]
     @property_hash[:ensure] == :present
   end
 
@@ -45,22 +50,10 @@ Puppet::Type.type(:psrepository).provide(:windows) do
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
   end
 
-  #def source_location
-  #  command = "$rp = Get-PSRepository #{@resource[:name]}; $rp.SourceLocation"
-  #  result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
-  #  result.downcase.strip
-  #end
-
   def source_location=(value)
     command = "Set-PSRepository #{@resource[:name]} -SourceLocation #{value}"
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
   end
-
-  #def installation_policy
-  #  command = "$rp = Get-PSRepository #{@resource[:name]}; $rp.InstallationPolicy"
-  #  result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
-  #  result.downcase.strip
-  #end
 
   def installation_policy=(value)
     command = "Set-PSRepository #{@resource[:name]} -InstallationPolicy #{value}"
