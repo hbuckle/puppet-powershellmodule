@@ -22,6 +22,9 @@ Puppet::Type.type(:powershellmodule).provide(:windows) do
     command = "Uninstall-Module #{@resource[:name]} -AllVersions"
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
     debug(result)
+    unless result.downcase.strip == ''
+      fail(result)
+    end
   end
 
   def create
@@ -39,6 +42,9 @@ Puppet::Type.type(:powershellmodule).provide(:windows) do
     end
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
     debug(result)
+    unless result.downcase.strip == ''
+      fail(result)
+    end
   end
 
   def version
@@ -57,7 +63,7 @@ Puppet::Type.type(:powershellmodule).provide(:windows) do
         end
       else
         specificcommand = "$mod = Get-InstalledModule #{@resource[:name]} -RequiredVersion #{@resource[:version]} -ErrorAction SilentlyContinue; try{$mod.Version.ToString()}catch{''}"
-        specificresult = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
+        specificresult = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', specificcommand])
         debug(specificresult)
         specificresult.downcase.strip
     end
@@ -69,8 +75,17 @@ Puppet::Type.type(:powershellmodule).provide(:windows) do
         command = "Update-Module #{@resource[:name]} -Force"
       else
         command = "Install-Module #{@resource[:name]} -RequiredVersion #{value} -Force"
+        case resource[:repository]
+          when nil
+            #do nothing
+          else
+            command = command + " -Repository #{@resource[:repository]}"
+        end
     end
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
     debug(result)
+    unless result.downcase.strip == ''
+      fail(result)
+    end
   end
 end

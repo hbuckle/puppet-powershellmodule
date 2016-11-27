@@ -15,7 +15,8 @@
 #    installation_policy => 'trusted',
 #}
 
-powershellmodule { 'hiscox-azure':
-    ensure  => present,
-    version => 'latest',
+powershellmodule { 'psexcel':
+    ensure  => absent,
+    version => '1.0.2',
+    repository => 'psgallery',
 }
