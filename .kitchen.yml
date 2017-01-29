@@ -1,0 +1,38 @@
+---
+driver:
+  name: azurerm
+ 
+driver_config:
+  subscription_id: 'bab9ed05-2c6e-4631-a0cf-7373c33838cc'
+  location: 'North Europe'
+  machine_size: 'Standard_F2s'
+  storage_account_type: 'Premium_LRS'
+  boot_diagnostics_enabled: 'false'
+ 
+provisioner:
+  name: puppet_apply
+  manifests_path: spec/manifests
+  modules_path: .kitchen-modules
+  require_chef_for_busser: false
+  resolve_with_librarian_puppet: false
+  require_puppet_collections: true
+  puppet_whitelist_exit_code: [0]
+  puppet_detailed_exitcodes: true
+  retry_on_exit_code: [2]
+  wait_for_retry: 10
+  puppet_version: 'latest'
+ 
+platforms:
+  - name: windows2016
+    driver_config:
+      image_urn: MicrosoftWindowsServer:WindowsServer:2016-Datacenter:latest
+    transport:
+      name: winrm
+ 
+verifier:
+  name: pester
+  use_local_pester_module: true
+  test_folder: ./spec/acceptance
+ 
+suites:
+  - name: default

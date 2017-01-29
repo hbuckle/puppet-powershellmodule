@@ -10,7 +10,7 @@ Puppet::Type.type(:psrepository).provide(:windows) do
               else
                 'powershell.exe'
               end
-  
+
   mk_resource_methods
 
   def self.instances

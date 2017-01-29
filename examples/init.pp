@@ -9,18 +9,26 @@
 # Learn more about module testing here:
 # https://docs.puppet.com/guides/tests_smoke.html
 #
-psrepository { 'PSGallery':
-    ensure              => present,
-    source_location     => 'https://www.powershellgallery.com/api/v2/',
-    installation_policy => 'untrusted',
-}
-
-resources { 'psrepository':
-    purge => true,
-}
-
-#powershellmodule { 'psexcel':
-#    ensure  => absent,
-#    version => '1.0.2',
-#    repository => 'psgallery',
+#psrepository { 'PSGallery':
+#    ensure              => present,
+#    source_location     => 'https://www.powershellgallery.com/api/v2/',
+#    installation_policy => 'untrusted',
 #}
+
+#resources { 'psrepository':
+#    purge => true,
+#}
+
+powershellmodule { 'psexcel1':
+    ensure     => present,
+    version    => '1.0.2',
+    repository => 'psgallery',
+    name       => 'psexcel',
+}
+
+powershellmodule { 'psexcel2':
+    ensure  => present,
+    version => '1.0.1',
+    repository => 'psgallery',
+    name => 'psexcel',
+}

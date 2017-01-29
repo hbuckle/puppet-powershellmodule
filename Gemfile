@@ -7,6 +7,13 @@ gem 'puppetlabs_spec_helper', '>= 1.0.0'
 gem 'puppet-lint', '>= 1.0.0'
 gem 'facter', '>= 1.7.0'
 gem 'rspec-puppet'
+gem 'test-kitchen'
+gem 'kitchen-puppet'
+gem 'kitchen-azurerm'
+gem 'kitchen-pester'
+gem 'winrm'
+gem 'winrm-fs'
+gem 'r10k'
 
 # rspec must be v2 for ruby 1.8.7
 if RUBY_VERSION >= '1.8.7' && RUBY_VERSION < '1.9'
