@@ -9,10 +9,10 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
   has_feature :upgradeable
   has_feature :versionable
 
-  commands :powershell =>
-              if File.exists?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
+  commands powershell:
+              if File.exist?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
                 "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
-              elsif File.exists?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
+              elsif File.exist?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
                 "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
               else
                 'powershell.exe'
@@ -20,27 +20,12 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
 
   def self.invoke_ps_command(command)
     result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
-    Puppet.debug result
-    result
-  end
-
-  def invoke_ps_command(command)
-    result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
-    Puppet.debug result
-    result
+    result.lines
   end
 
   def self.instances
-    command = <<-COMMAND
-    Get-Package -AllVersions -ProviderName PowerShellGet -Scope AllUsers -Type Module |
-      Group-Object -Property Name | % {
-        $_.Name
-        ($_.Group).Version -join ','
-    }
-    COMMAND
-    result = invoke_ps_command command
-    result.lines.each_slice(3).collect do |mod|
-      Puppet.debug mod
+    result = invoke_ps_command instances_command
+    result.each_slice(2).collect do |mod|
       new(
         name: mod[0].strip,
         ensure: mod[1].strip.split(','),
@@ -49,33 +34,57 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
     end
   end
 
+  # This is called by the base provider class. Seems to be used to
+  # set the property_hash, but we already have that, so just return it
   def query
-    self.class.instances.each do |mod|
-      return mod.properties if @resource[:name].casecmp(mod.name)
-    end
-    nil
+    @property_hash
   end
 
   def install
-    command = "Install-Module #{@resource[:name]} -RequiredVersion #{@resource[:ensure]} -Force"
-    command << " -Source #{@resource[:source]}" if @resource[:source]
-    invoke_ps_command command
+    self.class.invoke_ps_command install_command
   end
 
   def uninstall
-    command = "Uninstall-Module #{@resource[:name]} -AllVersions -Force"
-    invoke_ps_command command
+    self.class.invoke_ps_command uninstall_command
   end
 
   def latest
-    command = "$mod = Find-Module #{@resource[:name]}; $mod.Version.ToString()"
-    result = invoke_ps_command command
-    result.strip
+    result = self.class.invoke_ps_command latest_command
+    result[0].strip
   end
 
   def update
+    self.class.invoke_ps_command update_command
+  end
+
+  def self.instances_command
+    <<-COMMAND
+    Get-Package -AllVersions -ProviderName PowerShellGet -Scope AllUsers -Type Module |
+      Group-Object -Property Name | % {
+        $_.Name
+        ($_.Group).Version -join ','
+    }
+    COMMAND
+  end
+
+  def install_command
+    command = "Install-Module #{@resource[:name]} -Force"
+    command << " -RequiredVersion #{@resource[:ensure]}" unless [:present, :latest].include? @resource[:ensure]
+    command << " -Source #{@resource[:source]}" if @resource[:source]
+    command
+  end
+
+  def uninstall_command
+    "Uninstall-Module #{@resource[:name]} -AllVersions -Force"
+  end
+
+  def latest_command
+    "$mod = Find-Module #{@resource[:name]}; $mod.Version.ToString()"
+  end
+
+  def update_command
     command = "Install-Module #{@resource[:name]} -Force"
     command << " -Source #{@resource[:source]}" if @resource[:source]
-    invoke_ps_command command
+    command
   end
 end

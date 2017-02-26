@@ -1,2 +1,2 @@
-.kitchen/
-.kitchen.local.yml
+Gemfile.lock
+spec/fixtures/modules

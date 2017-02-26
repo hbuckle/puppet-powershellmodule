@@ -1,15 +1,26 @@
 {
   "name": "hbuckle-powershellmodule",
   "version": "0.1.0",
-  "author": "hbuckle",
-  "summary": null,
+  "author": "Henry Buckle",
+  "summary": "Manage PowerShell modules and repositories",
   "license": "Apache-2.0",
-  "source": "",
-  "project_page": null,
-  "issues_url": null,
-  "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
-  ],
-  "data_provider": null
+  "source": "https://github.com/hbuckle/puppet-powershellmodule",
+  "project_page": "https://github.com/hbuckle/puppet-powershellmodule",
+  "issues_url": "https://github.com/hbuckle/puppet-powershellmodule/issues",
+  "tags": ["powershell", "microsoft", "package"],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Windows",
+      "operatingsystemrelease": [
+        "Server 2008",
+        "Server 2008 R2",
+        "Server 2012",
+        "Server 2012 R2",
+        "7",
+        "8.1",
+        "10"
+      ]
+    }
+  ]
 }
 
