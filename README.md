@@ -30,8 +30,9 @@ Install-PackageProvider Nuget –Force
 
 ~~~ puppet
 psrepository { 'my-internal-repo':
+  ensure              => present,
   source_location     => 'http://myrepo.corp.com/api/nuget/powershell',
-  installation_policy => trusted,
+  installation_policy => 'trusted',
 }
 ~~~
 
