@@ -10,15 +10,17 @@ describe provider_class do
     @provider_instance = provider_class.new(type)
     allow(provider_class).to receive(:invoke_ps_command).with(
       provider_class.instances_command).and_return(
-        ['PackageManagement', '1.1.1.0', 'Pester', '4.0.2', 'Posh-SSH',
-         '1.7.7', 'PowerShellGet', '1.1.2.0', 'PSDeployTools', '1.0.6',
-         'PSExcel', '1.0,1.0.2']
+        [
+          '{"name":"PackageManagement","ensure":["1.1.6.0","1.1.7.0"],"provider":"psmodule"}',
+          '{"name":"Pester","ensure":["4.0.8"],"provider":"psmodule"}',
+          '{"name":"PowerShellGet","ensure":["1.5.0.0"],"provider":"psmodule"}'
+        ]
       )
   end
   describe :instances do
     specify 'returns an array of :psmodule providers' do
       instances = provider_class.instances
-      expect(instances.count).to eq(6)
+      expect(instances.count).to eq(3)
       expect(instances).to all(be_instance_of(provider_class))
     end
   end

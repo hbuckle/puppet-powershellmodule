@@ -25,13 +25,10 @@ Puppet::Type.type(:psrepository).provide(:windows) do
 
   def self.instances
     result = invoke_ps_command instances_command
-    result.each.collect do |repo|
-      new(
-        name: repo.split(',')[0].strip,
-        ensure: :present,
-        source_location: repo.split(',')[1].downcase.strip,
-        installation_policy: repo.split(',')[2].downcase.strip
-      )
+    result.each.collect do |line|
+      repo = JSON.parse(line.strip, symbolize_names: true)
+      repo[:ensure] = :present
+      new(repo)
     end
   end
 
@@ -77,7 +74,15 @@ Puppet::Type.type(:psrepository).provide(:windows) do
   end
 
   def self.instances_command
-    '@(Get-PSRepository).foreach({\"$($_.Name),$($_.SourceLocation),$($_.InstallationPolicy)\"})'
+    <<-COMMAND
+    @(Get-PSRepository).foreach({
+      [ordered]@{
+        'name' = $_.Name
+        'source_location' = $_.SourceLocation.ToLower()
+        'installation_policy' = $_.InstallationPolicy.ToLower()
+      } | ConvertTo-Json -Depth 99 -Compress
+    })
+    COMMAND
   end
 
   def create_command

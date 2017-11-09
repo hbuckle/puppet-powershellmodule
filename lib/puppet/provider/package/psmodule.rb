@@ -1,4 +1,5 @@
 require 'puppet/provider/package'
+require 'json'
 
 Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package do
   confine operatingsystem: :windows
@@ -25,12 +26,8 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
 
   def self.instances
     result = invoke_ps_command instances_command
-    result.each_slice(2).collect do |mod|
-      new(
-        name: mod[0].strip,
-        ensure: mod[1].strip.split(','),
-        provider: 'psmodule'
-      )
+    result.each.collect do |line|
+      new(JSON.parse(line.strip, symbolize_names: true))
     end
   end
 
@@ -61,9 +58,12 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
     # Get-Package is way faster than Get-InstalledModule
     <<-COMMAND
     Get-Package -AllVersions -ProviderName PowerShellGet -Scope AllUsers -Type Module |
-      Group-Object -Property Name | % {
-        $_.Name
-        ($_.Group).Version -join ','
+    Group-Object -Property Name | % {
+      [ordered]@{
+        'name' = $_.Name
+        'ensure' = @(($_.Group).Version)
+        'provider' = 'psmodule'
+      } | ConvertTo-Json -Depth 99 -Compress
     }
     COMMAND
   end
@@ -71,7 +71,7 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
   def install_command
     command = "Install-Module #{@resource[:name]} -Force"
     command << " -RequiredVersion #{@resource[:ensure]}" unless [:present, :latest].include? @resource[:ensure]
-    command << " -Source #{@resource[:source]}" if @resource[:source]
+    command << " -Repository #{@resource[:source]}" if @resource[:source]
     command
   end
 
@@ -85,7 +85,7 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
 
   def update_command
     command = "Install-Module #{@resource[:name]} -Force"
-    command << " -Source #{@resource[:source]}" if @resource[:source]
+    command << " -Repository #{@resource[:source]}" if @resource[:source]
     command
   end
 end
