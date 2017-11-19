@@ -1,6 +1,6 @@
 {
   "name": "hbuckle-powershellmodule",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Henry Buckle",
   "summary": "Manage PowerShell modules and repositories",
   "license": "Apache-2.0",
@@ -8,6 +8,7 @@
   "project_page": "https://github.com/hbuckle/puppet-powershellmodule",
   "issues_url": "https://github.com/hbuckle/puppet-powershellmodule/issues",
   "tags": ["powershell", "microsoft", "package"],
+  "dependencies": [],
   "operatingsystem_support": [
     {
       "operatingsystem": "Windows",
