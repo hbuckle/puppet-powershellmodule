@@ -18,4 +18,5 @@ psrepository { 'PSGallery':
 package { 'PSExcel':
   ensure   => latest,
   provider => 'psmodule',
+  source   => 'PSGallery',
 }

@@ -12,10 +12,12 @@ describe provider_class do
     allow(provider_class).to receive(:invoke_ps_command).and_return(nil)
     allow(provider_class).to receive(:invoke_ps_command).with(
       provider_class.instances_command
-    ).and_return([
-      'Repo1,https://repo1.com,Untrusted',
-      'Repo2,https://repo2.com,Trusted'
-    ])
+    ).and_return(
+      [
+        '{"name":"Repo1","source_location":"https://repo1.com","installation_policy":"untrusted"}',
+        '{"name":"Repo2","source_location":"https://repo2.com","installation_policy":"trusted"}'
+      ]
+    )
   end
   describe :instances do
     specify 'returns an array of :windows providers' do
