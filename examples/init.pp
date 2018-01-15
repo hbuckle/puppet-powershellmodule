@@ -17,6 +17,12 @@ psrepository { 'PSGallery':
 
 package { 'PSExcel':
   ensure   => latest,
-  provider => 'psmodule',
+  provider => 'windowspowershell',
+  source   => 'PSGallery',
+}
+
+package { 'Pester':
+  ensure   => latest,
+  provider => 'powershellcore',
   source   => 'PSGallery',
 }

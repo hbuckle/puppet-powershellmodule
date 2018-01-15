@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-provider_class = Puppet::Type.type(:psrepository).provider(:windows)
+provider_class = Puppet::Type.type(:psrepository).provider(:windowspowershell)
 
 describe provider_class do
   before(:each) do
