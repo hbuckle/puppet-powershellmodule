@@ -7,9 +7,9 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   commands pwsh: 'pwsh'
 
   def self.invoke_ps_command(command)
-    result = pwsh(['-NoProfile', '-NonInteractive', '-NoLogo', '-Command', "$ProgressPreference = 'SilentlyContinue'; #{command}"])
-    Puppet.debug result.exitstatus
-    Puppet.debug result.lines
+    result = Puppet::Util::Execution.execute(['pwsh', '-NoProfile', '-NonInteractive', '-NoLogo', '-Command',
+                                              "$ProgressPreference = 'SilentlyContinue'; $ErrorActionPreference = 'Stop'; #{command}"],
+                                             override_locale: false)
     result.lines
   end
 
