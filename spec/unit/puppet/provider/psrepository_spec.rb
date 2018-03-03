@@ -14,13 +14,13 @@ describe provider_class do
       provider_class.instances_command
     ).and_return(
       [
-        '{"name":"Repo1","source_location":"https://repo1.com","installation_policy":"untrusted"}',
-        '{"name":"Repo2","source_location":"https://repo2.com","installation_policy":"trusted"}'
+        '{"name":"Repo1","source_location":"https://repo1.com","installation_policy":"untrusted","provider":"windowspowershell"}',
+        '{"name":"Repo2","source_location":"https://repo2.com","installation_policy":"trusted","provider":"windowspowershell"}'
       ]
     )
   end
   describe :instances do
-    specify 'returns an array of :windows providers' do
+    specify 'returns an array of :windowspowershell providers' do
       instances = provider_class.instances
       expect(instances.count).to eq(2)
       expect(instances).to all(be_instance_of(provider_class))
@@ -29,11 +29,11 @@ describe provider_class do
       instances = provider_class.instances
       expect(instances[0].instance_variable_get('@property_hash')).to eq(
         name: 'Repo1', ensure: :present, source_location: 'https://repo1.com',
-        installation_policy: 'untrusted'
+        installation_policy: 'untrusted', provider: 'windowspowershell'
       )
       expect(instances[1].instance_variable_get('@property_hash')).to eq(
         name: 'Repo2', ensure: :present, source_location: 'https://repo2.com',
-        installation_policy: 'trusted'
+        installation_policy: 'trusted', provider: 'windowspowershell'
       )
     end
   end

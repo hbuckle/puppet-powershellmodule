@@ -7,6 +7,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   commands pwsh: 'pwsh'
 
   def self.invoke_ps_command(command)
+    # override_locale is necessary otherwise the Install-Module commands silently fails on Linux
     result = Puppet::Util::Execution.execute(['pwsh', '-NoProfile', '-NonInteractive', '-NoLogo', '-Command',
                                               "$ProgressPreference = 'SilentlyContinue'; $ErrorActionPreference = 'Stop'; #{command}"],
                                              override_locale: false)
@@ -59,13 +60,13 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
 
   def install_command
     command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
-    command << " -RequiredVersion #{@resource[:ensure]}" unless [:present, :latest].include? @resource[:ensure]
+    command << " -RequiredVersion #{@resource[:ensure]}" unless %i[present latest].include? @resource[:ensure]
     command << " -Repository #{@resource[:source]}" if @resource[:source]
     command
   end
 
   def uninstall_command
-    "Uninstall-Module #{@resource[:name]} -AllVersions -Scope AllUsers -Force"
+    "Uninstall-Module #{@resource[:name]} -AllVersions -Force"
   end
 
   def latest_command
