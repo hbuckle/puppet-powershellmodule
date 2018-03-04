@@ -62,13 +62,13 @@
       ]
     },
     {
-      "operatingsystem": "OpenSUSE",
+      "operatingsystem": "openSUSE",
       "operatingsystemrelease": [
         "42.2"
       ]
     },
     {
-      "operatingsystem": "osx",
+      "operatingsystem": "OSX",
       "operatingsystemrelease": [
         "10.12+"
       ]
