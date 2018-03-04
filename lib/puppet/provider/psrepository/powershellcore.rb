@@ -1,16 +1,6 @@
-Puppet::Type.type(:psrepository).provide(:windows) do
-  confine operatingsystem: :windows
-  confine feature: :powershellget
-
-  commands powershell:
-              if File.exist?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
-                "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
-              elsif File.exist?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
-                "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
-              else
-                'powershell.exe'
-              end
-
+Puppet::Type.type(:psrepository).provide(:powershellcore) do
+  initvars
+  commands pwsh: 'pwsh'
   mk_resource_methods
 
   def initialize(value = {})
@@ -19,7 +9,9 @@ Puppet::Type.type(:psrepository).provide(:windows) do
   end
 
   def self.invoke_ps_command(command)
-    result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
+    result = pwsh(['-NoProfile', '-NonInteractive', '-NoLogo', '-Command', "$ProgressPreference = 'SilentlyContinue'; #{command}"])
+    Puppet.debug result.exitstatus
+    Puppet.debug result.lines
     result.lines
   end
 

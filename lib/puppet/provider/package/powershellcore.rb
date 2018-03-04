@@ -1,26 +1,16 @@
 require 'puppet/provider/package'
 require 'json'
 
-Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package do
-  confine operatingsystem: :windows
-  confine feature: :powershellget
-
-  has_feature :installable
-  has_feature :uninstallable
-  has_feature :upgradeable
-  has_feature :versionable
-
-  commands powershell:
-              if File.exist?("#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe")
-                "#{ENV['SYSTEMROOT']}\\sysnative\\WindowsPowershell\\v1.0\\powershell.exe"
-              elsif File.exist?("#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe")
-                "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
-              else
-                'powershell.exe'
-              end
+Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::Package do
+  initvars
+  has_feature :installable, :uninstallable, :upgradeable, :versionable
+  commands pwsh: 'pwsh'
 
   def self.invoke_ps_command(command)
-    result = powershell(['-noprofile', '-executionpolicy', 'bypass', '-command', command])
+    # override_locale is necessary otherwise the Install-Module commands silently fails on Linux
+    result = Puppet::Util::Execution.execute(['pwsh', '-NoProfile', '-NonInteractive', '-NoLogo', '-Command',
+                                              "$ProgressPreference = 'SilentlyContinue'; $ErrorActionPreference = 'Stop'; #{command}"],
+                                             override_locale: false)
     result.lines
   end
 
@@ -62,15 +52,15 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
       [ordered]@{
         'name' = $_.Name
         'ensure' = @(($_.Group).Version)
-        'provider' = 'psmodule'
+        'provider' = '#{name}'
       } | ConvertTo-Json -Depth 99 -Compress
     }
     COMMAND
   end
 
   def install_command
-    command = "Install-Module #{@resource[:name]} -Force"
-    command << " -RequiredVersion #{@resource[:ensure]}" unless [:present, :latest].include? @resource[:ensure]
+    command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
+    command << " -RequiredVersion #{@resource[:ensure]}" unless %i[present latest].include? @resource[:ensure]
     command << " -Repository #{@resource[:source]}" if @resource[:source]
     command
   end
@@ -84,7 +74,7 @@ Puppet::Type.type(:package).provide :psmodule, parent: Puppet::Provider::Package
   end
 
   def update_command
-    command = "Install-Module #{@resource[:name]} -Force"
+    command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
     command << " -Repository #{@resource[:source]}" if @resource[:source]
     command
   end
