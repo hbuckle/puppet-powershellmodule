@@ -5,7 +5,7 @@ provider_class = Puppet::Type.type(:psrepository).provider(:windowspowershell)
 describe provider_class do
   before(:each) do
     type = Puppet::Type.type(:psrepository).new(
-      name: :repo, source_location: 'http://source.com',
+      name: 'repo', source_location: 'http://source.com',
       installation_policy: :trusted
     )
     @provider_instance = provider_class.new(type)

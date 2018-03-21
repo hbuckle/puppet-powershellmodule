@@ -37,10 +37,7 @@ describe Puppet::Type.type(:psrepository) do
   describe "parameter :name" do
     subject { resource.parameters[:name] }
 
-    it {
-      pending("Pending proper validation implementation")
-      is_expected.to be_isnamevar
-    }
+    it { is_expected.to be_isnamevar }
 
     it "should not allow nil" do
       expect {
@@ -49,7 +46,6 @@ describe Puppet::Type.type(:psrepository) do
     end
 
     it "should not allow empty" do
-      pending("Pending proper validation implementation")
       expect {
         resource[:name] = ''
       }.to raise_error(Puppet::ResourceError, /A non-empty name must/)
@@ -63,7 +59,6 @@ describe Puppet::Type.type(:psrepository) do
 
     [ '*', '()', '[]', '!@' ].each do |value|
       it "should reject '#{value}'" do
-        pending("Pending proper validation implementation")
         expect { resource[:name] = value }.to raise_error(Puppet::ResourceError, /is not a valid name/)
       end
     end
@@ -78,7 +73,6 @@ describe Puppet::Type.type(:psrepository) do
     end
 
     it "should not allow empty" do
-      pending("Pending proper validation implementation")
       expect {
         resource[:source_location] = ''
       }.to raise_error(Puppet::ResourceError, /A non-empty source_location must/)
@@ -91,8 +85,7 @@ describe Puppet::Type.type(:psrepository) do
 
     [ 'value', 'value with spaces', 'UPPER CASE', '0123456789_-', 'With.Period' ].each do |value|
       it "should reject '#{value}'" do
-        pending("Pending proper validation implementation")
-        expect { resource[:source_location] = value }.to raise_error(Puppet::ResourceError, /is not a valid URI/)
+        expect { resource[:source_location] = value }.to raise_error(Puppet::ResourceError, /should be a valid URI/)
       end
     end
   end
