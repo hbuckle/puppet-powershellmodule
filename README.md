@@ -11,6 +11,7 @@
     * [Use the PowerShell Gallery](#use-the-powershell-gallery)
     * [Side by side installation](#side-by-side-installation)
     * [The provider](#the-provider)
+    * [Full working example](#full-working-example)
 1. [Reference](#reference)
     * [Types](#types)
     * [Providers](#providers)
@@ -31,15 +32,42 @@ For Windows PowerShell the PowerShellGet PowerShell module must be installed as 
 the NuGet package provider. PowerShellGet is included with WMF5 or can be installed for earlier
 versions here http://go.microsoft.com/fwlink/?LinkID=746217&clcid=0x409
 
-NuGet can be installed by running
-
-`Install-PackageProvider Nuget –Force`
-
 ### PowerShell Core
 
 PowerShellGet is included in PowerShell Core so no additional setup is necessary.
 
 ## Usage
+
+### Install PowerShellGet PackageProviders
+
+
+You can install PackageProviders for PowerShelLGet using the `pspackageprovider` type.
+
+```puppet
+pspackageprovider {'ExampleProvider':
+  ensure   => 'present',
+  provider => 'windowspowershell',
+}
+```
+
+In order to use this module to to get packages from a PSRepository like the `PSGallery`, you will have to ensure the `Nuget` provider is installed:
+
+```puppet
+pspackageprovider {'Nuget':
+  ensure   => 'present',
+  provider => 'windowspowershell',
+}
+```
+
+You can optionally specify the version of a PackageProvider using the `version` parameter.
+
+```puppet
+pspackageprovider {'Nuget':
+  ensure   => 'present',
+  version  => '2.8.5.208',
+  provider => 'windowspowershell',
+}
+```
 
 ### Register an internal PowerShell repository
 
@@ -102,14 +130,78 @@ package { 'PSExcel-psc':
 
 The provider to use will either be `windowspowershell` or `powershellcore`. Nodes using `powershell.exe` will use `windowspowershell`, and nodes that have PowerShell core (`pwsh.exe`) will use the `powershellcore` provider with both the `psrepository` and `package` types.
 
+### Full Working example
+
+This complete example shows how to bootstrap the system with the Nuget package provider, ensure the PowerShell Gallery repository is configured and trusted, and install two modules (one using the WindowsPowerShell provider and one using the PowerShellCore provider).
+
+```puppet
+pspackageprovider {'Nuget':
+  ensure => 'present'
+}
+
+psrepository { 'PSGallery':
+  ensure              => present,
+  source_location     => 'https://www.powershellgallery.com/api/v2/',
+  installation_policy => 'trusted',
+}
+
+package { 'xPSDesiredStateConfiguration':
+  ensure   => latest,
+  provider => 'windowspowershell',
+  source   => 'PSGallery',
+}
+
+package { 'Pester':
+  ensure   => latest,
+  provider => 'powershellcore',
+  source   => 'PSGallery',
+}
+```
+
 ## Limitations
 
 Note that PowerShell modules can be installed side by side so installing a newer
 version of a module will not remove any previous versions.
 
+- As detailed in https://github.com/OneGet/oneget/issues/308, installing PackageProviders from a offline location instead of online is currently not working. A workaround is to use the Puppet file resource to ensure the prescence of the file before attempting to use the NuGet PackageProvider.
+
+The following is an incompelete example that copies the NuGet provider dll to the directory that PowerShellGet expects. You would have to modify this declaration to complete the permissions for the target and the location of the source file.
+
+```
+file{"C:\Program Files\PackageManagement\ProviderAssemblies\nuget\2.8.5.208\Microsoft.PackageManagement.NuGetProvider.dll":
+  ensure => 'file',
+  source => "$source\nuget\2.8.5.208\Microsoft.PackageManagement.NuGetProvider.dll"
+}
+
+```
+
 ## Reference
 
 ### Types
+
+* [package](#package)
+* [pspackageprovider](#pspackageprovider)
+* [psrepository](#psrepository)
+
+### package
+
+`puppet-powershellmodule` implements a [package type](http://docs.puppet.com/references/latest/type.html#package) with a resource provider, which is built into Puppet.
+
+### pspackageprovider
+
+#### Properties/Parameters
+
+##### `ensure`
+
+Specifies what state the PowerShellGet provider should be in. Valid options: `present` and `absent`. Default: `present`.
+
+##### `name`
+
+Specifies the name of the PowerShellGet provider to install.
+
+##### `version`
+
+Specifies the version of the PowerShellGet provider to install
 
 ### psrepository
 
