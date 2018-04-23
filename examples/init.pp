@@ -9,6 +9,10 @@
 # Learn more about module testing here:
 # https://docs.puppet.com/guides/tests_smoke.html
 #
+pspackageprovider {'Nuget':
+  ensure => 'present'
+}
+
 psrepository { 'PSGallery':
   ensure              => present,
   source_location     => 'https://www.powershellgallery.com/api/v2/',
