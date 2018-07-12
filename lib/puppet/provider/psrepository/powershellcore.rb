@@ -70,7 +70,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
     @(Get-PSRepository).foreach({
       [ordered]@{
         'name' = $_.Name
-        'source_location' = $_.SourceLocation.ToLower()
+        'source_location' = $_.SourceLocation
         'installation_policy' = $_.InstallationPolicy.ToLower()
       } | ConvertTo-Json -Depth 99 -Compress
     })

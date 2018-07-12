@@ -27,7 +27,6 @@ Puppet::Type.newtype(:psrepository) do
         fail "#{value} is not a valid URI"
       end
     end
-    munge(&:downcase)
   end
 
   newproperty(:installation_policy) do
