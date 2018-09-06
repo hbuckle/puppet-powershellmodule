@@ -60,7 +60,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
 
   def install_command
     command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
-    command << " -RequiredVersion #{@resource[:ensure]}" unless %i[present latest].include? @resource[:ensure]
+    command << " -RequiredVersion #{@resource[:ensure]}" unless [:present, :latest].include? @resource[:ensure]
     command << " -Repository #{@resource[:source]}" if @resource[:source]
     command
   end
