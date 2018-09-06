@@ -7,6 +7,9 @@ AllCops:
 Style/ClassAndModuleChildren:
   EnforcedStyle: compact
 
+Style/SymbolArray:
+  Enabled: false
+
 Metrics/MethodLength:
   Max: 20
 
