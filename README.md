@@ -149,6 +149,7 @@ package { 'xPSDesiredStateConfiguration':
   ensure   => latest,
   provider => 'windowspowershell',
   source   => 'PSGallery',
+  install_options => [ '-AllowClobber' ]
 }
 
 package { 'Pester':
