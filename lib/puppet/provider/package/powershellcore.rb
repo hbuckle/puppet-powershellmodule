@@ -55,10 +55,10 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   # @param options [Array]
   # @return Concatenated list of options
   # @api private
-  def install_options
-    return unless @resource[:install_options]
+  def install_options(options)
+    return unless options
 
-    @resource[:install_options].collect do |val|
+    options.collect do |val|
       case val
         when Hash
           val.keys.sort.collect do |k|
@@ -88,7 +88,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
     command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
     command << " -RequiredVersion #{@resource[:ensure]}" unless [:present, :latest].include? @resource[:ensure]
     command << " -Repository #{@resource[:source]}" if @resource[:source]
-    command << " #{install_options}" if @resource[:install_options]
+    command << " #{install_options(@resource[:install_options])}" if @resource[:install_options]
     command
   end
 
@@ -103,7 +103,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   def update_command
     command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
     command << " -Repository #{@resource[:source]}" if @resource[:source]
-    command << " #{install_options}" if @resource[:install_options]
+    command << " #{install_options(@resource[:install_options])}" if @resource[:install_options]
     command
   end
 end
