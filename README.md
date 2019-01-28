@@ -149,6 +149,7 @@ package { 'xPSDesiredStateConfiguration':
   ensure   => latest,
   provider => 'windowspowershell',
   source   => 'PSGallery',
+  install_options => [ '-AllowClobber' ]
 }
 
 package { 'Pester':
@@ -186,6 +187,19 @@ file{"C:\Program Files\PackageManagement\ProviderAssemblies\nuget\2.8.5.208\Micr
 ### package
 
 `puppet-powershellmodule` implements a [package type](http://docs.puppet.com/references/latest/type.html#package) with a resource provider, which is built into Puppet.
+
+The implementation supports the [install_options](https://puppet.com/docs/puppet/6.2/type.html#package-attribute-install_options) attribute which can be used to pass additional options to the PowerShell Install-Modules command, e.g.:
+
+```
+package { 'xPSDesiredStateConfiguration':
+  ensure   => latest,
+  provider => 'windowspowershell',
+  source   => 'PSGallery',
+  install_options => [ '-AllowClobber',
+                       { '-proxy' => 'http://proxy.local.domain' }  ]
+}
+
+```
 
 ### pspackageprovider
 
