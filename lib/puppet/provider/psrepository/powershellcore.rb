@@ -77,6 +77,26 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
     COMMAND
   end
 
+  # Takes an array of security protocol types, e.g. [Tls,Tls11],
+  # see https://docs.microsoft.com/en-us/dotnet/api/system.net.securityprotocoltype
+  # and produces a PowerShell command that can be used to set
+  # the ServicePointManager.SecurityProtocol Property,
+  # see https://docs.microsoft.com/en-us/dotnet/api/system.net.servicepointmanager.securityprotocol
+  # If securityprotocols are specified for a repository, then the
+  # ServicePointManager.SecurityProtocol Property needs to be set
+  # before any request to the repository.
+  # @param protocols [Array]
+  # @return PowerShell command
+  def join_protocols(protocols)
+    return unless protocols
+
+    command = "[Net.ServicePointManager]::SecurityProtocol = 0"
+    protocols.each do |val|
+      command << " -bor [Net.SecurityProtocolType]::#{val}"
+    end
+    command
+  end
+
   def create_command
     <<-COMMAND
     $params = @{
@@ -84,6 +104,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
       SourceLocation = '#{@resource[:source_location]}'
       InstallationPolicy = '#{@resource[:installation_policy]}'
     }
+    #{join_protocols(@resource[:securityprotocols])}
     Register-PSRepository @params
     COMMAND
   end
