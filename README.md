@@ -80,6 +80,18 @@ psrepository { 'my-internal-repo':
 }
 ```
 
+If the PowerShell repository enforces a specific security protocol, e.g. TLS 1.2, then this can be specified using the securityprotocols parameter, see [SecurityProtocolType Enum](https://docs.microsoft.com/en-us/dotnet/api/system.net.securityprotocoltype) for a list of allowed values.
+
+```puppet
+psrepository { 'my-internal-repo':
+  ensure              => present,
+  source_location     => 'http://myrepo.corp.com/api/nuget/powershell',
+  installation_policy => 'trusted',
+  provider            => 'windowspowershell',
+  securityprotocols   => [ 'Tls12' ]
+}
+```
+
 Manifests can then refer to that repository using the `package` resource.
 
 ```puppet
@@ -234,6 +246,10 @@ The url to the repository that you would like to register. Must be a valid HTTP 
 #### `installation_policy`
 
 Manages the installation policy used for the PSRepository. Valid values are `trusted` or `untrusted`
+
+#### `securityprotocols`
+
+An optional array of security protocols to use when accessing the repository.  Values specified will be used to set the [ServicePointManager.SecurityProtocol](https://docs.microsoft.com/en-us/dotnet/api/system.net.servicepointmanager.securityprotocol) property, if this parameter is not specified then the system default protocol will be used.
 
 ### Providers
 #### `windowspowershell`

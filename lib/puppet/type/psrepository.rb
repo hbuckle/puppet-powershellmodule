@@ -34,4 +34,16 @@ Puppet::Type.newtype(:psrepository) do
     defaultto :untrusted
     newvalues(:trusted, :untrusted)
   end
+  
+  newparam(:securityprotocols, :array_matching => :all) do
+    desc "An array of security protocols which should be used when accessing the PS repository.
+      See: https://docs.microsoft.com/en-us/dotnet/api/system.net.securityprotocoltype?view=netframework-4.7.2.
+      e.g. securityprotocols => [Tls,Tls11,TLS12]
+      If this is not specified the system default TLS settings will be used."
+
+    # Make sure we convert to an array.
+    munge do |value|
+      [value].flatten
+    end
+  end  
 end

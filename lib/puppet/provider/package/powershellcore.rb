@@ -44,6 +44,35 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
     self.class.invoke_ps_command update_command
   end
 
+  # Takes an array of security protocol types, e.g. [Tls,Tls11],
+  # see https://docs.microsoft.com/en-us/dotnet/api/system.net.securityprotocoltype
+  # and produces a PowerShell command that can be used to set
+  # the ServicePointManager.SecurityProtocol Property,
+  # see https://docs.microsoft.com/en-us/dotnet/api/system.net.servicepointmanager.securityprotocol
+  # If securityprotocols are specified for a repository, then the
+  # ServicePointManager.SecurityProtocol Property needs to be set
+  # before any request to the repository.
+  # @param protocols [Array]
+  # @return PowerShell command
+  def join_protocols(protocols)
+    return unless protocols
+
+    command = "[Net.ServicePointManager]::SecurityProtocol = 0"
+    protocols.each do |val|
+      command << " -bor [Net.SecurityProtocolType]::#{val}"
+    end
+    command
+  end
+
+  # Gets the value of the securityprotocols argument from the
+  # specified psrepository resource and converts them into a 
+  # PowerShell command to set the ServicePointManager.SecurityProtocol Property.
+  def securityprotocols(repository)
+    psrepo = resource.catalog.resource(:psrepository,repository)
+    proto = psrepo.parameters[:securityprotocols] unless psrepo.nil?
+    join_protocols(proto.value) unless proto.nil?
+  end
+  
   # Turns a array of install_options into flags to be passed to a command.
   # The options can be passed as a string or hash. Note that passing a hash
   # should only be used in case "-foo bar" must be passed,
@@ -85,7 +114,8 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   end
 
   def install_command
-    command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
+    command = "#{securityprotocols(@resource[:source])};"
+    command << "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
     command << " -RequiredVersion #{@resource[:ensure]}" unless [:present, :latest].include? @resource[:ensure]
     command << " -Repository #{@resource[:source]}" if @resource[:source]
     command << " #{install_options(@resource[:install_options])}" if @resource[:install_options]
@@ -97,11 +127,16 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   end
 
   def latest_command
-    "$mod = Find-Module #{@resource[:name]}; $mod.Version.ToString()"
+    command = "#{securityprotocols(@resource[:source])};"
+    command << "$mod = Find-Module #{@resource[:name]}"
+    command << " -Repository #{@resource[:source]}" if @resource[:source]
+    command << "; $mod.Version.ToString()"
+    command
   end
 
   def update_command
-    command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
+    command = "#{securityprotocols(@resource[:source])};"
+    command << "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
     command << " -Repository #{@resource[:source]}" if @resource[:source]
     command << " #{install_options(@resource[:install_options])}" if @resource[:install_options]
     command
