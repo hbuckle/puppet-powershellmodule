@@ -1,0 +1,10 @@
+name: 2.0$(Rev:.r)
+
+jobs:
+  - job: build
+    pool:
+      vmImage: vs2017-win2016
+
+    steps:
+      - powershell: |
+          Write-Host test
