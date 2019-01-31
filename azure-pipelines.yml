@@ -11,8 +11,10 @@ jobs:
         inputs:
           versionSpec: '>= 2.4'
           addToPath: true
-      - script: |
+      - powershell: |
           gem install bundler
           bundle install
           bundle exec rake spec
         enabled: true
+        errorActionPreference: stop
+        failOnStderr: true
