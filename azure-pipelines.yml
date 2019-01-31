@@ -12,6 +12,7 @@ jobs:
           versionSpec: '>= 2.4'
           addToPath: true
       - script: |
+          gem install bundler
           bundle install
           bundle exec rake spec
         enabled: true
