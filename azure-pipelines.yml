@@ -4,7 +4,14 @@ jobs:
   - job: build
     pool:
       vmImage: vs2017-win2016
-
     steps:
-      - powershell: |
-          Write-Host test
+      - checkout: self
+        clean: true
+      - task: UseRubyVersion@0
+        inputs:
+          versionSpec: '>= 2.4'
+          addToPath: true
+      - script: |
+          bundle install
+          bundle exec rake spec
+        enabled: true
