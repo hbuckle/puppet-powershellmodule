@@ -62,7 +62,7 @@ describe provider_class do
       provider_instance = provider_class.new(type)
       output = provider_instance.install_command
       expect(output).to eq(
-        'Install-Module module -Scope AllUsers0 -Force -RequiredVersion 1.0.0 -Repository http://source.com -foobar -foo bar'
+        'Install-Module module -Scope AllUsers -Force -RequiredVersion 1.0.0 -Repository http://source.com -foobar -foo bar'
       )
     end
   end
