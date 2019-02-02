@@ -3,7 +3,6 @@ require 'spec_helper'
 provider_class = Puppet::Type.type(:pspackageprovider).provider(:windowspowershell)
 
 describe provider_class do
-
   before(:each) do
     type = Puppet::Type.type(:pspackageprovider).new(
       name: 'repo'
@@ -68,9 +67,8 @@ describe provider_class do
     specify 'calls install-packageprovider with parameters' do
       @provider_instance.create
       expect(provider_class).to have_received(:invoke_ps_command).with(
-        "PackageManagement\\Install-PackageProvider -Name repo -Force"
+        'PackageManagement\\Install-PackageProvider -Name repo -Force'
       )
     end
   end
-  
 end

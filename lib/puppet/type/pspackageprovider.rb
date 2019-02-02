@@ -7,14 +7,12 @@ Puppet::Type.newtype(:pspackageprovider) do
     end
   end
 
-  newparam(:name, :namevar => true) do
+  newparam(:name, namevar: true) do
     desc 'The name of the package provider'
     validate do |value|
-      if value.nil? or value.empty?
-        raise ArgumentError, "A non-empty #{self.name.to_s} must be specified."
-      end
-      fail "#{self.name.to_s} should be a String" unless value.is_a? ::String
-      fail("#{value} is not a valid #{self.name.to_s}") unless value =~ /^[a-zA-Z0-9\.\-\_\'\s]+$/
+      raise ArgumentError, "A non-empty #{self.name} must be specified." if value.nil? || value.empty?
+      raise "#{self.name} should be a String" unless value.is_a? ::String
+      raise "#{value} is not a valid #{self.name}" unless value =~ /^[a-zA-Z0-9\.\-\_\'\s]+$/
     end
     munge(&:downcase)
   end
@@ -22,11 +20,8 @@ Puppet::Type.newtype(:pspackageprovider) do
   newproperty(:version) do
     desc 'The version for a PowerShell Package Provider'
     validate do |value|
-      if value.nil? or value.empty?
-        raise ArgumentError, "A non-empty #{self.name.to_s} must be specified."
-      end
-      fail "#{self.name.to_s} should be a String" unless value.is_a? ::String
+      raise ArgumentError, "A non-empty #{self.name} must be specified." if value.nil? || value.empty?
+      raise "#{self.name} should be a String" unless value.is_a? ::String
     end
   end
-
 end

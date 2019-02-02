@@ -50,12 +50,12 @@ Puppet::Type.type(:pspackageprovider).provide :powershellcore do
       flush_command = "PackageManagement\\Install-PackageProvider -Name #{@resource[:name]}"
       @property_flush.each do |key, value|
         if @property_flush[:version]
-          flush_command << " -RequiredVersion '#{value}'" 
+          flush_command << " -RequiredVersion '#{value}'"
         else
           flush_command << " -#{key} '#{value}'"
         end
       end
-      flush_command < " -Force"
+      flush_command << ' -Force'
       self.class.invoke_ps_command flush_command
     end
     @property_hash = @resource.to_hash
@@ -75,8 +75,7 @@ Puppet::Type.type(:pspackageprovider).provide :powershellcore do
   def install_command
     command = []
     command << "PackageManagement\\Install-PackageProvider -Name #{@resource[:name]}"
-    command << " -Force"
+    command << ' -Force'
     command.join
   end
-
 end

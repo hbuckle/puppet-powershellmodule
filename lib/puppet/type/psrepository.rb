@@ -3,28 +3,24 @@ Puppet::Type.newtype(:psrepository) do
 
   ensurable
 
-  newparam(:name, :namevar => true) do
+  newparam(:name, namevar: true) do
     desc 'The name of the repository'
     validate do |value|
-      if value.nil? or value.empty?
-        raise ArgumentError, "A non-empty #{self.name.to_s} must be specified."
-      end
-      fail "#{self.name.to_s} should be a String" unless value.is_a? ::String
-      fail("#{value} is not a valid #{self.name.to_s}") unless value =~ /^[a-zA-Z0-9\.\-\_\'\s]+$/
+      raise ArgumentError, "A non-empty #{self.name} must be specified." if value.nil? || value.empty?
+      raise "#{self.name} should be a String" unless value.is_a? ::String
+      raise "#{value} is not a valid #{self.name}" unless value =~ /^[a-zA-Z0-9\.\-\_\'\s]+$/
     end
   end
 
   newproperty(:source_location) do
     desc 'The source location'
     validate do |value|
-      if value.nil? or value.empty?
-        raise ArgumentError, "A non-empty #{self.name.to_s} must be specified."
-      end
-      fail "#{self.name.to_s} should be a String" unless value.is_a? ::String
-      fail "#{self.name.to_s} should be a valid URI" unless value =~ URI::DEFAULT_PARSER.regexp[:ABS_URI]
+      raise ArgumentError, "A non-empty #{self.name} must be specified." if value.nil? || value.empty?
+      raise "#{self.name} should be a String" unless value.is_a? ::String
+      raise "#{self.name} should be a valid URI" unless value =~ URI::DEFAULT_PARSER.regexp[:ABS_URI]
       unless URI.parse(value).is_a?(URI::HTTP) ||
              URI.parse(value).is_a?(URI::HTTPS)
-        fail "#{value} is not a valid URI"
+        raise "#{value} is not a valid URI"
       end
     end
   end
