@@ -56,7 +56,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
 
   def flush
     unless @property_flush.empty?
-      flush_command = "Set-PSRepository #{@resource[:name]}"
+      flush_command = "Set-PSRepository"
       @property_flush.each do |key, value|
         flush_command << " -#{key} '#{value}'"
       end
