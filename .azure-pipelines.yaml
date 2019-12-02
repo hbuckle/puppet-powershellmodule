@@ -1,5 +1,7 @@
 name: $(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
-
+variables:
+  - name: pdkversion
+    value: 1.14.1.0
 stages:
   - stage: ci
     jobs:
@@ -11,11 +13,13 @@ stages:
           - checkout: self
             clean: true
             displayName: checkout
-          - script: choco install pdk -y
+          - script: choco install pdk -y --no-progress --version $(pdkversion)
             displayName: install pdk
-          - pwsh: |
+          - powershell: |
               Import-Module "$env:ProgramFiles\Puppet Labs\DevelopmentKit\share\PowerShell\Modules\PuppetDevelopmentKit\PuppetDevelopmentKit.psd1"
-              pdk test unit --format=junit:$(Agent.TempDirectory)\unit.xml --verbose
+              $output = Join-Path "$(Agent.TempDirectory)" "unit.xml"
+              # pdk test unit --format=junit:${output} --verbose
+              pdk test unit
             errorActionPreference: stop
             failOnStderr: true
             displayName: pdk test unit
