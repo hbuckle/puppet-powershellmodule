@@ -7,12 +7,9 @@
   "source": "https://github.com/hbuckle/puppet-powershellmodule",
   "project_page": "https://github.com/hbuckle/puppet-powershellmodule",
   "issues_url": "https://github.com/hbuckle/puppet-powershellmodule/issues",
-  "tags": [
-    "powershell",
-    "microsoft",
-    "package"
+  "dependencies": [
+
   ],
-  "dependencies": [],
   "operatingsystem_support": [
     {
       "operatingsystem": "Windows",
@@ -73,5 +70,19 @@
         "10.12+"
       ]
     }
-  ]
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">= 4.10.0 < 7.0.0"
+    }
+  ],
+  "tags": [
+    "powershell",
+    "microsoft",
+    "package"
+  ],
+  "pdk-version": "1.14.1",
+  "template-url": "pdk-default#1.14.1",
+  "template-ref": "1.14.1-0-g0b5b39b"
 }

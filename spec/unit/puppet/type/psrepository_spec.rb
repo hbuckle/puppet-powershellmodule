@@ -110,7 +110,7 @@ describe Puppet::Type.type(:psrepository) do
     it 'should not accept invalid string value' do
       expect {
         resource[:installation_policy] = 'woot'
-      }.to raise_error(Puppet::ResourceError, /Invalid value "woot". Valid values are trusted, untrusted./)
+      }.to raise_error(Puppet::ResourceError, %r{Invalid value "woot". Valid values are trusted, untrusted.})
     end
   end
 end

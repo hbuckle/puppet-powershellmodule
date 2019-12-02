@@ -1,0 +1,8 @@
+spec/spec_helper.rb:
+  mock_with: ":rspec"
+appveyor.yml:
+  delete: true
+.gitlab-ci.yml:
+  delete: true
+.travis.yml:
+  delete: true

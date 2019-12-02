@@ -1,0 +1,27 @@
+name: $(BuildDefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+stages:
+  - stage: ci
+    jobs:
+      - job: windows
+        dependsOn: []
+        pool:
+          vmImage: windows2019
+        steps:
+          - checkout: self
+            clean: true
+            displayName: checkout
+          - script: choco install pdk -y
+            displayName: install pdk
+          - pwsh: |
+              Import-Module "$env:ProgramFiles\Puppet Labs\DevelopmentKit\share\PowerShell\Modules\PuppetDevelopmentKit\PuppetDevelopmentKit.psd1"
+              pdk test unit --format=junit:$(Agent.TempDirectory)\unit.xml --verbose
+            errorActionPreference: stop
+            failOnStderr: true
+            displayName: pdk test unit
+          - task: PublishTestResults@2
+            inputs:
+              searchFolder: $(Agent.TempDirectory)
+              testResultsFormat: JUnit
+              testResultsFiles: "*.xml"
+            displayName: publish test results
