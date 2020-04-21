@@ -65,15 +65,25 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
     @property_hash = @resource.to_hash
   end
 
+  # Expected return example when an actual repo is registered:
+  # {"name":"PSGallery","source_location":"https://www.powershellgallery.com/api/v2","installation_policy":"trusted"}
+  # When no ps repos are registered it returns:
+  # WARNING: Unable to find module repositories.
   def self.instances_command
     <<-COMMAND
-    @(Get-PSRepository).foreach({
-      [ordered]@{
-        'name' = $_.Name
-        'source_location' = $_.SourceLocation
-        'installation_policy' = $_.InstallationPolicy.ToLower()
-      } | ConvertTo-Json -Depth 99 -Compress
-    })
+    try{ 
+
+        @(Get-PSRepository -ErrorAction Stop -WarningAction Stop 3>$null).foreach({
+            [ordered]@{
+            'name' = $_.Name
+            'source_location' = $_.SourceLocation
+            'installation_policy' = $_.InstallationPolicy.ToLower()
+            } | ConvertTo-Json -Depth 99 -Compress
+        }) 
+    }
+    catch {
+        @() | ConvertTo-Json
+    }
     COMMAND
   end
 
