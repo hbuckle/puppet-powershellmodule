@@ -84,7 +84,18 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
       SourceLocation = '#{@resource[:source_location]}'
       InstallationPolicy = '#{@resource[:installation_policy]}'
     }
-    Register-PSRepository @params
+
+    # Detecting if this is Powershell Gallery repo or not
+    if($params.Name -eq 'PSGallery' -or $params.SourceLocation -match 'powershellgallery'){
+      # Trim these params or the splatting will fail
+      $params.Remove('Name')
+      $params.Remove('InstallationPolicy')
+      Register-PSRepository -Default @params
+    }
+    # For all non-PSGallery repos..
+    else{
+      Register-PSRepository @params
+    }
     COMMAND
   end
 
