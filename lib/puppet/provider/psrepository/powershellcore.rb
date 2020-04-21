@@ -82,7 +82,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
         }) 
     }
     catch {
-        @() | ConvertTo-Json
+
     }
     COMMAND
   end
