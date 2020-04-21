@@ -89,7 +89,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
     if($params.Name -eq 'PSGallery' -or $params.SourceLocation -match 'powershellgallery'){
       # Trim these params or the splatting will fail
       $params.Remove('Name')
-      $params.Remove('InstallationPolicy')
+      $params.Remove('SourceLocation')
       Register-PSRepository -Default @params
     }
     # For all non-PSGallery repos..
