@@ -66,7 +66,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
       # For each attribute on the psrepos..
       @property_flush.each do |key, value|
         # If the repo we are currently touching is powershell gallery...
-        next if @resource[:name].downcase == 'powershellgallery' && key == :sourcelocation
+        next if @resource[:name].downcase == 'psgallery' && key == :sourcelocation
         
         # Append that attribute to the true-up command
         flush_command << " -#{key} '#{value}'"
