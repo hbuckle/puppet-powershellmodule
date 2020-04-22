@@ -46,20 +46,32 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
     @property_hash.clear
   end
 
+  # The source location for existing psrepos
+  # You cannot define this for the default psgallery repo
   def source_location=(value)
     @property_flush[:sourcelocation] = value
   end
 
+  # The installation policy for existing psrepos
   def installation_policy=(value)
     @property_flush[:installationpolicy] = value
   end
 
+  # Sets any pre-existing psrepo to have the proper attributes. Source location, install policy, etc.
   def flush
+    # If any psrepos existed on the system...
     unless @property_flush.empty?
+      # Base block of the command which will be used to true-up psrepos
       flush_command = "Set-PSRepository #{@resource[:name]}"
+      # For each attribute on the psrepos..
       @property_flush.each do |key, value|
+        # If the repo we are currently touching is powershell gallery...
+        next if @resource[:name].downcase == 'powershellgallery' && key == :sourcelocation
+        
+        # Append that attribute to the true-up command
         flush_command << " -#{key} '#{value}'"
       end
+      # launch pwsh to true-up any pre-existing repo with proper settings
       self.class.invoke_ps_command flush_command
     end
     @property_hash = @resource.to_hash
@@ -68,11 +80,11 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
   # Expected return example when an actual repo is registered:
   # {"name":"PSGallery","source_location":"https://www.powershellgallery.com/api/v2","installation_policy":"trusted"}
   # When no ps repos are registered it returns:
-  # WARNING: Unable to find module repositories.
+  # WARNING: Unable to find module repositories
+  # The try, catch here gets around the issue of having no repos
   def self.instances_command
     <<-COMMAND
     try{ 
-
         @(Get-PSRepository -ErrorAction Stop -WarningAction Stop 3>$null).foreach({
             [ordered]@{
             'name' = $_.Name
@@ -81,6 +93,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
             } | ConvertTo-Json -Depth 99 -Compress
         }) 
     }
+    # If no repos were registered
     catch {
       exit 0
     }
