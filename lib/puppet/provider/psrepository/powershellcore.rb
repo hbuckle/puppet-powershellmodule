@@ -65,7 +65,8 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
       flush_command = "Set-PSRepository #{@resource[:name]}"
       # For each attribute on the psrepos..
       @property_flush.each do |key, value|
-        # If the repo we are currently touching is powershell gallery...
+        # If the repo we is powershell gallery, then DROP the source_location key
+        # If you specify source_location for the PSGallery default repo, it will fail
         next if @resource[:name].downcase == 'psgallery' && key == :sourcelocation
         
         # Append that attribute to the true-up command
