@@ -97,7 +97,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   end
 
   def latest_command
-    "$mod = Find-Module #{@resource[:name]}; $mod.Version.ToString()"
+    "$mod = Find-Module #{@resource[:name]} -Repository #{@resource[:source]}; $mod.Version.ToString()"
   end
 
   def update_command
