@@ -73,7 +73,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   def self.instances_command
     # Get-Package is way faster than Get-InstalledModule
     <<-COMMAND
-    Get-Package -AllVersions -ProviderName PowerShellGet -Scope AllUsers -Type Module |
+    Get-Package -AllVersions -ProviderName PowerShellGet -Scope AllUsers -Type Module -WarningAction 'SilentlyContinue' |
     Group-Object -Property Name | % {
       [ordered]@{
         'name' = $_.Name
@@ -100,7 +100,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
 
   # Command to fetch latest version of powershell modules
   def latest_command
-    "$mod = Find-Module #{@resource[:name]}; $mod.Version.ToString()"
+    "$mod = Find-Module #{@resource[:name]} -Repository #{@resource[:source]}; $mod.Version.ToString()"
   end
 
   # Command to update powershell modules
