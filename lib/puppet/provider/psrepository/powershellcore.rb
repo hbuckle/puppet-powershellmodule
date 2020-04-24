@@ -46,34 +46,58 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
     @property_hash.clear
   end
 
+  # The source location for existing psrepos
+  # You cannot define this for the default psgallery repo
   def source_location=(value)
     @property_flush[:sourcelocation] = value
   end
 
+  # The installation policy for existing psrepos
   def installation_policy=(value)
     @property_flush[:installationpolicy] = value
   end
 
+  # Sets any pre-existing psrepo to have the proper attributes. Source location, install policy, etc.
   def flush
+    # If any psrepos existed on the system...
     unless @property_flush.empty?
+      # Base block of the command which will be used to true-up psrepos
       flush_command = "Set-PSRepository #{@resource[:name]}"
+      # For each attribute on the psrepos..
       @property_flush.each do |key, value|
+        # If the repo we is powershell gallery, then DROP the source_location key
+        # If you specify source_location for the PSGallery default repo, it will fail
+        next if @resource[:name].downcase == 'psgallery' && key == :sourcelocation
+        
+        # Append that attribute to the true-up command
         flush_command << " -#{key} '#{value}'"
       end
+      # launch pwsh to true-up any pre-existing repo with proper settings
       self.class.invoke_ps_command flush_command
     end
     @property_hash = @resource.to_hash
   end
 
+  # Expected return example when an actual repo is registered:
+  # {"name":"PSGallery","source_location":"https://www.powershellgallery.com/api/v2","installation_policy":"trusted"}
+  # When no ps repos are registered it returns:
+  # WARNING: Unable to find module repositories
+  # The try, catch here gets around the issue of having no repos
   def self.instances_command
     <<-COMMAND
-    @(Get-PSRepository -WarningAction SilentlyContinue).foreach({
-      [ordered]@{
-        'name' = $_.Name
-        'source_location' = $_.SourceLocation
-        'installation_policy' = $_.InstallationPolicy.ToLower()
-      } | ConvertTo-Json -Depth 99 -Compress
-    })
+    try{ 
+        @(Get-PSRepository -ErrorAction Stop -WarningAction Stop 3>$null).foreach({
+            [ordered]@{
+            'name' = $_.Name
+            'source_location' = $_.SourceLocation
+            'installation_policy' = $_.InstallationPolicy.ToLower()
+            } | ConvertTo-Json -Depth 99 -Compress
+        }) 
+    }
+    # If no repos were registered
+    catch {
+      exit 0
+    }
     COMMAND
   end
 
@@ -84,7 +108,18 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
       SourceLocation = '#{@resource[:source_location]}'
       InstallationPolicy = '#{@resource[:installation_policy]}'
     }
-    Register-PSRepository @params
+
+    # Detecting if this is Powershell Gallery repo or not
+    if($params.Name -eq 'PSGallery' -or $params.SourceLocation -match 'powershellgallery'){
+      # Trim these params or the splatting will fail
+      $params.Remove('Name')
+      $params.Remove('SourceLocation')
+      Register-PSRepository -Default @params
+    }
+    # For all non-PSGallery repos..
+    else{
+      Register-PSRepository @params
+    }
     COMMAND
   end
 

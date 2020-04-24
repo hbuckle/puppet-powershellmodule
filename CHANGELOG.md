@@ -1,3 +1,17 @@
+## Development
+
+BUG FIXES:
+
+`psrepository` fixes:
+- Fixes the inability to register psrepoositorys when none are registered on the node prior to puppet due to bug in `instances_command` expecting a returned hashtable.
+- Many fixes around the default powershell gallery repo due to the `flush` command attempting to set the source_location of the repo:
+  - Fixes the inability to change the installation policy of a pre-existing powershell gallery repo
+  - Fixes the inability to register the powershell gallery repo
+
+`package` fixes:
+-  Fixes the inability to upgrade previously installed modules with -AllowClobber. This would previously fail with an error if a cmdlet was moved to a new module. Powershell would error stating the cmdlet exists in the system already within a module and you need to specific -AllowClobber to install the new one.
+
+
 ## 2.0.1 (September 6, 2018)
 
 BUG FIXES:

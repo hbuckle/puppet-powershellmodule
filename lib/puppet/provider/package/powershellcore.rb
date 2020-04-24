@@ -84,6 +84,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
     COMMAND
   end
 
+  # Command used to install powershell modules
   def install_command
     command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
     command << " -RequiredVersion #{@resource[:ensure]}" unless [:present, :latest].include? @resource[:ensure]
@@ -92,16 +93,22 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
     command
   end
 
+  # Command to unisntall powershell modules
   def uninstall_command
     "Uninstall-Module #{@resource[:name]} -AllVersions -Force"
   end
 
+  # Command to fetch latest version of powershell modules
   def latest_command
     "$mod = Find-Module #{@resource[:name]} -Repository #{@resource[:source]}; $mod.Version.ToString()"
   end
 
+  # Command to update powershell modules
   def update_command
-    command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force"
+    # The -AllowClobber here is needed because this command will fail with an error like:
+    # "This cmdlet exists on the system and could cause a conflict, use -allowclobber to install"
+    # I believe this is due to a cmdlet moving from one module to another, seen in powercli modules
+    command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force -AllowClobber"
     command << " -Repository #{@resource[:source]}" if @resource[:source]
     command << " #{install_options(@resource[:install_options])}" if @resource[:install_options]
     command
