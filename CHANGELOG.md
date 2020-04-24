@@ -1,4 +1,4 @@
-## 2.0.2 (April 24, 2020)
+## Development
 
 BUG FIXES:
 
