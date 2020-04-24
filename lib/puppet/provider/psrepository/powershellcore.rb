@@ -67,7 +67,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
 
   def self.instances_command
     <<-COMMAND
-    @(Get-PSRepository).foreach({
+    @(Get-PSRepository -WarningAction SilentlyContinue).foreach({
       [ordered]@{
         'name' = $_.Name
         'source_location' = $_.SourceLocation
