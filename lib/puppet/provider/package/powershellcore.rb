@@ -105,6 +105,9 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
 
   # Command to update powershell modules
   def update_command
+    # The -AllowClobber here is needed because this command will fail with an error like:
+    # "This cmdlet exists on the system and could cause a conflict, use -allowclobber to install"
+    # I believe this is due to a cmdlet moving from one module to another, seen in powercli modules
     command = "Install-Module #{@resource[:name]} -Scope AllUsers -Force -AllowClobber"
     command << " -Repository #{@resource[:source]}" if @resource[:source]
     command << " #{install_options(@resource[:install_options])}" if @resource[:install_options]
