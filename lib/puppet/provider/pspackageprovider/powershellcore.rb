@@ -21,15 +21,14 @@ Puppet::Type.type(:pspackageprovider).provide :powershellcore do
 
   def self.prefetch(resources)
     instances.each do |prov|
-      if resource = resources[prov.name]
-        resource.provider = prov
-      end
+      resource = resources[prov.name]
+      resource.provider = prov if resource
     end
   end
 
   def self.instances
     result = invoke_ps_command instances_command
-    result.each.collect do |line|
+    result.each.map do |line|
       p = JSON.parse(line.strip, symbolize_names: true)
       p[:ensure] = :present
       new(p)
@@ -49,13 +48,13 @@ Puppet::Type.type(:pspackageprovider).provide :powershellcore do
     unless @property_flush.empty?
       flush_command = "PackageManagement\\Install-PackageProvider -Name #{@resource[:name]}"
       @property_flush.each do |key, value|
-        if @property_flush[:version]
-          flush_command << " -RequiredVersion '#{value}'" 
-        else
-          flush_command << " -#{key} '#{value}'"
-        end
+        flush_command << if @property_flush[:version]
+                           " -RequiredVersion '#{value}'"
+                         else
+                           " -#{key} '#{value}'"
+                         end
       end
-      flush_command < " -Force"
+      flush_command << ' -Force'
       self.class.invoke_ps_command flush_command
     end
     @property_hash = @resource.to_hash
@@ -75,8 +74,7 @@ Puppet::Type.type(:pspackageprovider).provide :powershellcore do
   def install_command
     command = []
     command << "PackageManagement\\Install-PackageProvider -Name #{@resource[:name]}"
-    command << " -Force"
+    command << ' -Force'
     command.join
   end
-
 end

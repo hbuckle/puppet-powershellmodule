@@ -3,23 +3,28 @@ require 'spec_helper'
 provider_class = Puppet::Type.type(:psrepository).provider(:windowspowershell)
 
 describe provider_class do
-  before(:each) do
-    type = Puppet::Type.type(:psrepository).new(
+  let(:type) do
+    Puppet::Type.type(:psrepository).new(
       name: 'repo', source_location: 'http://source.com',
       installation_policy: :trusted
     )
-    @provider_instance = provider_class.new(type)
+  end
+
+  let(:provider_instance) { provider_class.new(type) }
+
+  before(:each) do
     allow(provider_class).to receive(:invoke_ps_command).and_return(nil)
     allow(provider_class).to receive(:invoke_ps_command).with(
-      provider_class.instances_command
+      provider_class.instances_command,
     ).and_return(
       [
         '{"name":"Repo1","source_location":"https://repo1.com","installation_policy":"untrusted","provider":"windowspowershell"}',
-        '{"name":"Repo2","source_location":"https://repo2.com","installation_policy":"trusted","provider":"windowspowershell"}'
-      ]
+        '{"name":"Repo2","source_location":"https://repo2.com","installation_policy":"trusted","provider":"windowspowershell"}',
+      ],
     )
   end
-  describe :instances do
+
+  describe 'instances' do
     specify 'returns an array of :windowspowershell providers' do
       instances = provider_class.instances
       expect(instances.count).to eq(2)
@@ -37,39 +42,42 @@ describe provider_class do
       )
     end
   end
-  describe :prefetch do
+
+  describe 'prefetch' do
     specify 'sets the provider instance of the managed resource to a provider with the fetched state' do
-      repo_resource1 = spy('psrepository', name: 'Repo1')
-      repo_resource2 = spy('psrepository', name: 'Repo2')
+      repo_resource1 = instance_double('psrepository', name: 'Repo1')
+      repo_resource2 = instance_double('psrepository', name: 'Repo2')
+      expect(repo_resource1).to receive(:provider=).with(
+        provider_class.instances[0],
+      )
+      expect(repo_resource2).to receive(:provider=).with(
+        provider_class.instances[1],
+      )
       provider_class.prefetch(
         'Repo1' => repo_resource1,
-        'Repo2' => repo_resource2
-      )
-      expect(repo_resource1).to have_received(:provider=).with(
-        provider_class.instances[0]
-      )
-      expect(repo_resource2).to have_received(:provider=).with(
-        provider_class.instances[1]
+        'Repo2' => repo_resource2,
       )
     end
   end
-  describe :exists? do
+
+  describe 'exists?' do
     specify 'returns true if the resource already exists' do
       existing_instance = provider_class.instances[0]
       expect(existing_instance.exists?).to be true
     end
     specify 'returns false if the resource does not exist' do
-      expect(@provider_instance.exists?).to be false
+      expect(provider_instance.exists?).to be false
     end
   end
-  describe :flush do
+
+  describe 'flush' do
     specify 'calls set-psrepository with updated parameters' do
-      @provider_instance.source_location = 'http://newsource.com'
-      @provider_instance.installation_policy = 'untrusted'
-      @provider_instance.flush
-      expect(provider_class).to have_received(:invoke_ps_command).with(
-        "Set-PSRepository repo -sourcelocation 'http://newsource.com' -installationpolicy 'untrusted'"
+      expect(provider_class).to receive(:invoke_ps_command).with(
+        "Set-PSRepository repo -sourcelocation 'http://newsource.com' -installationpolicy 'untrusted'",
       )
+      provider_instance.source_location = 'http://newsource.com'
+      provider_instance.installation_policy = 'untrusted'
+      provider_instance.flush
     end
   end
 end
