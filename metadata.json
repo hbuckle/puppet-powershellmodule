@@ -1,12 +1,12 @@
 {
-  "name": "hbuckle-powershellmodule",
-  "version": "2.0.1",
-  "author": "Henry Buckle",
+  "name": "encore-powershellmodule",
+  "version": "2.1.0",
+  "author": "Encore Technologies",
   "summary": "Manage PowerShell modules and repositories",
   "license": "Apache-2.0",
-  "source": "https://github.com/hbuckle/puppet-powershellmodule",
-  "project_page": "https://github.com/hbuckle/puppet-powershellmodule",
-  "issues_url": "https://github.com/hbuckle/puppet-powershellmodule/issues",
+  "source": "https://github.com/EncoreTechnologies/puppet-powershellmodule",
+  "project_page": "https://github.com/EncoreTechnologies/puppet-powershellmodule",
+  "issues_url": "https://github.com/EncoreTechnologies/puppet-powershellmodule/issues",
   "dependencies": [
 
   ],
@@ -14,62 +14,12 @@
     {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
-        "Server 2008",
-        "Server 2008 R2",
         "Server 2012",
         "Server 2012 R2",
         "Server 2016",
-        "7",
-        "8.1",
-        "10"
+        "Server 2019"
       ]
     },
-    {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": [
-        "8.7+",
-        "9"
-      ]
-    },
-    {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [
-        "14.04",
-        "16.04",
-        "17.04"
-      ]
-    },
-    {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "7"
-      ]
-    },
-    {
-      "operatingsystem": "Fedora",
-      "operatingsystemrelease": [
-        "25",
-        "26"
-      ]
-    },
-    {
-      "operatingsystem": "openSUSE",
-      "operatingsystemrelease": [
-        "42.2"
-      ]
-    },
-    {
-      "operatingsystem": "OSX",
-      "operatingsystemrelease": [
-        "10.12+"
-      ]
-    }
   ],
   "requirements": [
     {
