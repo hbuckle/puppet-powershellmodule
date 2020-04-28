@@ -1,5 +1,12 @@
 # powershellmodule
 
+[![Build Status](https://travis-ci.org/EncoreTechnologies/puppet-powershellmodule.svg?branch=master)](https://travis-ci.org/EncoreTechnologies/puppet-powershellmodule)
+[![Puppet Forge Version](https://img.shields.io/puppetforge/v/encore/powershellmodule.svg)](https://forge.puppet.com/encore/powershellmodule)
+[![Puppet Forge Downloads](https://img.shields.io/puppetforge/dt/encore/powershellmodule.svg)](https://forge.puppet.com/encore/powershellmodule)
+[![Puppet Forge Score](https://img.shields.io/puppetforge/f/encore/powershellmodule.svg)](https://forge.puppet.com/encore/powershellmodule)
+[![Puppet PDK Version](https://img.shields.io/puppetforge/pdk-version/encore/powershellmodule.svg)](https://forge.puppet.com/encore/powershellmodule)
+[![puppetmodule.info docs](http://www.puppetmodule.info/images/badge.png)](http://www.puppetmodule.info/m/encore-powershellmodule)
+
 #### Table of Contents
 
 1. [Description](#description)
@@ -246,4 +253,4 @@ The provider for systems that use PowerShell core via `pwsh.exe`.
 
 ## Development
 
-https://github.com/hbuckle/puppet-powershellmodule
+https://github.com/EncoreTechnologies/puppet-powershellmodule
