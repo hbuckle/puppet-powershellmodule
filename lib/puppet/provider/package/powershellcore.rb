@@ -16,7 +16,7 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
 
   def self.instances
     result = invoke_ps_command instances_command
-    result.each.collect do |line|
+    result.each.map do |line|
       new(JSON.parse(line.strip, symbolize_names: true))
     end
   end
@@ -58,16 +58,17 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   def install_options(options)
     return unless options
 
-    options.collect do |val|
+    opts = options.map do |val|
       case val
-        when Hash
-          val.keys.sort.collect do |k|
-            "#{k} #{val[k]}"
-          end
-        else
-          val
+      when Hash
+        val.keys.sort.map do |k|
+          "#{k} #{val[k]}"
+        end
+      else
+        val
       end
-    end.flatten.join(" ")
+    end
+    opts.flatten.join(' ')
   end
 
   def self.instances_command

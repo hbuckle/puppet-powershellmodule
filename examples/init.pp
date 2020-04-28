@@ -10,7 +10,7 @@
 # https://docs.puppet.com/guides/tests_smoke.html
 #
 pspackageprovider {'Nuget':
-  ensure => 'present'
+  ensure => 'present',
 }
 
 psrepository { 'PSGallery':
