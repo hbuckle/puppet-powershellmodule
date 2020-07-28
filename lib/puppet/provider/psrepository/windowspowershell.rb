@@ -11,7 +11,7 @@ Puppet::Type.type(:psrepository).provide(:windowspowershell, parent: :powershell
     # so without forcing TLSv1.2 here the command will fail.
     sec_proto_cmd = '[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12'
     result = powershell(['-NoProfile', '-ExecutionPolicy', 'Bypass', '-NonInteractive', '-NoLogo', '-Command',
-      "$ProgressPreference = 'SilentlyContinue'; $ErrorActionPreference = 'Stop'; #{sec_proto_cmd}; #{command}"])
+                         "$ProgressPreference = 'SilentlyContinue'; $ErrorActionPreference = 'Stop'; #{sec_proto_cmd}; #{command}"])
     result.lines
   end
 end
