@@ -1,6 +1,6 @@
 {
   "name": "hbuckle-powershellmodule",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "author": "Henry Buckle",
   "summary": "Manage PowerShell modules and repositories",
   "license": "Apache-2.0",
