@@ -1,5 +1,8 @@
 ## Development
 
+* Fixed bug where CDNs requiring TLSv1.2 caused an idempotency issue in `psrepository` on 
+  older Windos versions. (Bugfix) #12
+
 ## 2.1.0 (2020-04-28)
 
 * `psrepository` - Fixed the inability to register psrepoositorys when none are registered on the node prior to puppet due to bug in `instances_command` expecting a returned hashtable. (Bugfix)
