@@ -1,6 +1,6 @@
 # powershellmodule
 
-[![Build Status](https://github.com/EncoreTechnologies/puppet-powershellmodule/workflows/build/badge.svg?branch=master)](https://github.com/EncoreTechnologies/puppet-powershellmodule/actions?query=branch%3Amaster)
+[![Build Status](https://github.com/EncoreTechnologies/puppet-powershellmodule/workflows/build/badge.svg?branch=master)](https://github.com/EncoreTechnologies/puppet-powershellmodule/actions)
 [![Puppet Forge Version](https://img.shields.io/puppetforge/v/encore/powershellmodule.svg)](https://forge.puppet.com/encore/powershellmodule)
 [![Puppet Forge Downloads](https://img.shields.io/puppetforge/dt/encore/powershellmodule.svg)](https://forge.puppet.com/encore/powershellmodule)
 [![Puppet Forge Score](https://img.shields.io/puppetforge/f/encore/powershellmodule.svg)](https://forge.puppet.com/encore/powershellmodule)
