@@ -1,5 +1,7 @@
 ## Development
 
+## 2.1.1 (2020-10-27)
+
 * Fixed bug where CDNs requiring TLSv1.2 caused an idempotency issue in `psrepository` on 
   older Windos versions. (Bugfix) #12
 * PDK sync to 1.18.1 (Feature)
