@@ -43,6 +43,13 @@ versions here http://go.microsoft.com/fwlink/?LinkID=746217&clcid=0x409
 
 PowerShellGet is included in PowerShell Core so no additional setup is necessary.
 
+### Ruby-pwsh
+
+This module now relies on the [ruby-pwsh](https://github.com/puppetlabs/ruby-pwsh) gem
+from Puppet in order to improve performance and cache its PowerShell runtimes.
+
+You will need to install the `puppetlabs/pwshlib` module from the forge [here](https://forge.puppet.com/puppetlabs/pwshlib).
+
 ## Usage
 
 ### Install PowerShellGet PackageProviders

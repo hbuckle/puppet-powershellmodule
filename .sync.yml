@@ -42,6 +42,8 @@ Gemfile:
         version: '>= 0.3.0'
       - gem: 'puppet-lint-version_comparison-check'
         version: '>= 0.2.1'
+      - gem: 'ruby-pwsh'
+        version: '>= 0.3.0'
       - gem: 'r10k'
         version: '>= 3.0.0'
       # cri is needed by r10k, but due to a bug in the cri gem v2.15.7 it breaks r10k

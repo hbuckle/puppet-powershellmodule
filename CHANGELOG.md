@@ -1,5 +1,10 @@
 ## Development
 
+* Added PowerShell runtime caching using `ruby-pwsh` gem and the `puppetlabs/pwshlib` forge module
+  as a new dependency. (Feature) #17
+  
+  Contributed by Nick Maludy (@nmaludy)
+
 ## 2.1.2 (2020-10-27)
 
 * Fixed bug in `package` where the `source` parameter was always inserted when checking for the
