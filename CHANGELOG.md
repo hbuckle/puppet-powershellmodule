@@ -1,5 +1,7 @@
 ## Development
 
+* PDK sync to 1.18.1 (Feature)
+
 ## 2.1.0 (2020-04-28)
 
 * `psrepository` - Fixed the inability to register psrepoositorys when none are registered on the node prior to puppet due to bug in `instances_command` expecting a returned hashtable. (Bugfix)
