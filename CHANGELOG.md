@@ -1,5 +1,7 @@
 ## Development
 
+## 2.1.2 (2020-10-27)
+
 * Fixed bug in `package` where the `source` parameter was always inserted when checking for the
   latest version of a module. (Bugfix) #13
 
