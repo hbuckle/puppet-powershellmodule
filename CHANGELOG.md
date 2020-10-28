@@ -3,6 +3,13 @@
 * Fixed bug in `package` where the `source` parameter was always inserted when checking for the
   latest version of a module. (Bugfix) #13
 
+## 2.1.1 (2020-10-27)
+
+* Fixed bug where CDNs requiring TLSv1.2 caused an idempotency issue in `psrepository` on 
+  older Windos versions. (Bugfix) #12
+* PDK sync to 1.18.1 (Feature)
+* Convert over to GitHub actions (Feature)
+
 ## 2.1.0 (2020-04-28)
 
 * `psrepository` - Fixed the inability to register psrepoositorys when none are registered on the node prior to puppet due to bug in `instances_command` expecting a returned hashtable. (Bugfix)
