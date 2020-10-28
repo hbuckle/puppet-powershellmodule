@@ -36,12 +36,12 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
   end
 
   def latest
-    result = self.class.invoke_ps_command latest_command
+    result = self.class.invoke_ps_command(latest_command)
     result[0].strip
   end
 
   def update
-    self.class.invoke_ps_command update_command
+    self.class.invoke_ps_command(update_command)
   end
 
   # Turns a array of install_options into flags to be passed to a command.
@@ -101,7 +101,10 @@ Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::P
 
   # Command to fetch latest version of powershell modules
   def latest_command
-    "$mod = Find-Module #{@resource[:name]} -Repository #{@resource[:source]}; $mod.Version.ToString()"
+    command = "$mod = Find-Module #{@resource[:name]}"
+    command << " -Repository #{@resource[:source]}" if @resource[:source]
+    command << '; $mod.Version.ToString()'
+    command
   end
 
   # Command to update powershell modules
