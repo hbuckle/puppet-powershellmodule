@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches: ['*']
-    tags:        
+    tags:
       - v*
   pull_request:
     type: [opened, reopened, edited]
@@ -59,8 +59,8 @@ jobs:
     name: 'deploy to forge'
     needs: test
     runs-on: ubuntu-latest
-    # TODO uncomment once we get this working
-    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    # only run deploy on tags that start with 'v'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -79,14 +79,15 @@ jobs:
           [ -z "$RUBYGEMS_VERSION" ] || (yes || true) | gem update --system $RUBYGEMS_VERSION
           gem --version
           bundle -v
-      - name: Gem install
-        run: 'gem install rake puppet-blacksmith'
+      - name: Bundle install
+        run: |
+          bundle install --without system_tests --path=${BUNDLE_PATH:-vendor/bundle}
       - name: Build and Deploy
         env:
           # TODO configure secrets here:
           #  https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets
-          BLACKSMITH_FORGE_USERNAME: myuser
-          BLACKSMITH_FORGE_PASSWORD: mypassword
+          BLACKSMITH_FORGE_USERNAME: '${{ secrets.PUPPET_FORGE_USERNAME }}'
+          BLACKSMITH_FORGE_PASSWORD: '${{ secrets.PUPPET_FORGE_PASSWORD }}'
         run: |
-          rake module:build
-          rake module:push
+          bundle exec rake module:build
+          bundle exec rake module:push

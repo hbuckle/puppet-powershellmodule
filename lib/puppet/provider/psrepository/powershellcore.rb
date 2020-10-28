@@ -8,15 +8,23 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
     @property_flush = {}
   end
 
+  def self.sec_proto_cmd
+    # The SecurityProtocol section of the -Command forces PowerShell to use TLSv1.2,
+    # which is not enabled by default unless explicitly configured system-wide in the registry.
+    # The PowerShell Gallery website enforces the use of TLSv1.2 for all incoming connections,
+    # so without forcing TLSv1.2 here the command will fail.
+    '[Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12'
+  end
+
   def self.invoke_ps_command(command)
-    result = pwsh(['-NoProfile', '-NonInteractive', '-NoLogo', '-Command', "$ProgressPreference = 'SilentlyContinue'; #{command}"])
+    result = pwsh(['-NoProfile', '-NonInteractive', '-NoLogo', '-Command', "$ProgressPreference = 'SilentlyContinue'; #{sec_proto_cmd}; #{command}"])
     Puppet.debug result.exitstatus
     Puppet.debug result.lines
     result.lines
   end
 
   def self.instances
-    result = invoke_ps_command instances_command
+    result = invoke_ps_command(instances_command)
     result.each.map do |line|
       repo = JSON.parse(line.strip, symbolize_names: true)
       repo[:ensure] = :present
@@ -85,6 +93,7 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
   def self.instances_command
     <<-COMMAND
     try {
+        [Net.ServicePointManager]::SecurityProtocol += [Net.SecurityProtocolType]::Tls12
         @(Get-PSRepository -ErrorAction Stop -WarningAction Stop 3>$null).foreach({
             [ordered]@{
             'name' = $_.Name

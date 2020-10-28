@@ -18,6 +18,8 @@ appveyor.yml:
 Gemfile:
   required:
     ':development':
+      - gem: 'puppet-blacksmith'
+        version: '>= 5.0.0'
       - gem: 'puppet-lint-absolute_template_path'
         version: '>= 1.0.1'
       - gem: 'puppet-lint-alias-check'
