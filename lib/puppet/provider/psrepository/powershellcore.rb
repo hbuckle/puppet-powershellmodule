@@ -84,7 +84,6 @@ Puppet::Type.type(:psrepository).provide(:powershellcore) do
   def self.instances_command
     <<-COMMAND
     try {
-        [Net.ServicePointManager]::SecurityProtocol += [Net.SecurityProtocolType]::Tls12
         @(Get-PSRepository -ErrorAction Stop -WarningAction Stop 3>$null).foreach({
             [ordered]@{
             'name' = $_.Name

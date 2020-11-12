@@ -11,13 +11,6 @@ module PuppetX::PowerShellModule
   class Helper
     include Singleton
 
-    def initialize
-      @powershell = Pwsh::Manager.instance(Pwsh::Manager.powershell_path,
-                                           Pwsh::Manager.powershell_args)
-      @pwsh = Pwsh::Manager.instance(Pwsh::Manager.pwsh_path,
-                                     Pwsh::Manager.pwsh_args)
-    end
-
     def setup_cmd
       "$ProgressPreference = 'SilentlyContinue'; $ErrorActionPreference = 'Stop'"
     end
@@ -44,21 +37,36 @@ module PuppetX::PowerShellModule
       if full_result
         result
       else
-        result[:stdout].lines
+        # if stdout had nothing printed to it, it returns nil, instead we always
+        # want an empty string
+        stdout = result[:stdout] || ''
+        stdout.lines
       end
+    end
+
+    def pwsh_instance
+      # lazy initialize because this might not exist on a system
+      @pwsh ||= Pwsh::Manager.instance(Pwsh::Manager.pwsh_path,
+                                       Pwsh::Manager.pwsh_args)
     end
 
     def pwsh(command, fail_on_failure: true, full_result: false)
       cmd = full_cmd(command)
       Puppet.debug("Running pwsh command: #{cmd}")
-      result = @pwsh.execute(cmd)
+      result = pwsh_instance.execute(cmd)
       process_result(result, cmd, fail_on_failure: fail_on_failure, full_result: full_result)
+    end
+
+    def powershell_instance
+      # lazy initialize because this might not exist on a system
+      @powershell ||= Pwsh::Manager.instance(Pwsh::Manager.powershell_path,
+                                             Pwsh::Manager.powershell_args)
     end
 
     def powershell(command, fail_on_failure: true, full_result: false)
       cmd = full_cmd(command)
       Puppet.debug("Running powershell command: #{cmd}")
-      result = @powershell.execute(cmd)
+      result = powershell_instance.execute(cmd)
       process_result(result, cmd, fail_on_failure: fail_on_failure, full_result: full_result)
     end
   end
