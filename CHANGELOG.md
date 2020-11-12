@@ -1,5 +1,7 @@
 ## Development
 
+## 2.2.0 (2020-11-12)
+
 * Added PowerShell runtime caching using `ruby-pwsh` gem and the `puppetlabs/pwshlib` forge module
   as a new dependency. (Feature) #17
   
