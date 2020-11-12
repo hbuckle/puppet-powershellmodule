@@ -1,6 +1,6 @@
 {
   "name": "encore-powershellmodule",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "author": "Encore Technologies",
   "summary": "Manage PowerShell modules and repositories",
   "license": "Apache-2.0",
