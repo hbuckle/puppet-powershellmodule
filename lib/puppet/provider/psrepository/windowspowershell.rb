@@ -1,3 +1,5 @@
+require 'puppet_x/encore/powershellmodule/helper'
+
 Puppet::Type.type(:psrepository).provide(:windowspowershell, parent: :powershellcore) do
   initvars
   confine operatingsystem: :windows
@@ -5,8 +7,6 @@ Puppet::Type.type(:psrepository).provide(:windowspowershell, parent: :powershell
   commands powershell: 'powershell'
 
   def self.invoke_ps_command(command)
-    result = powershell(['-NoProfile', '-ExecutionPolicy', 'Bypass', '-NonInteractive', '-NoLogo', '-Command',
-                         "$ProgressPreference = 'SilentlyContinue'; $ErrorActionPreference = 'Stop'; #{sec_proto_cmd}; #{command}"])
-    result.lines
+    PuppetX::PowerShellModule::Helper.instance.powershell(command)
   end
 end

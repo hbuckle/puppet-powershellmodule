@@ -1,4 +1,5 @@
 require 'json'
+require 'puppet_x/encore/powershellmodule/helper'
 
 Puppet::Type.type(:pspackageprovider).provide :powershellcore do
   confine operatingsystem: :windows
@@ -8,10 +9,8 @@ Puppet::Type.type(:pspackageprovider).provide :powershellcore do
 
   def self.invoke_ps_command(command)
     # override_locale is necessary otherwise the Install-Module commands silently fails on Linux
-    result = Puppet::Util::Execution.execute(['pwsh', '-NoProfile', '-NonInteractive', '-NoLogo', '-Command',
-                                              "$ProgressPreference = 'SilentlyContinue'; $ErrorActionPreference = 'Stop'; #{command}"],
-                                             override_locale: false)
-    result.lines
+    # TODO is this still necessary with ruby-pwsh
+    PuppetX::PowerShellModule::Helper.instance.pwsh(command)
   end
 
   def initialize(value = {})
