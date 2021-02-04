@@ -1,5 +1,11 @@
 ## Development
 
+* Replaced the require call for `puppet_x` helper library to use a dynamically
+  expanded path. This works around limitations in Puppet Ruby `LOAD_PATH`
+  with error `no such file to load -- puppet_x/encore/powershellmodule/helper`.
+
+  Contributed by Valters Jansons (@sigv)
+
 ## 2.2.0 (2020-11-12)
 
 * Added PowerShell runtime caching using `ruby-pwsh` gem and the `puppetlabs/pwshlib` forge module

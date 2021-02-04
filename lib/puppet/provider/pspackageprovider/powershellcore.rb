@@ -1,5 +1,5 @@
 require 'json'
-require 'puppet_x/encore/powershellmodule/helper'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'encore', 'powershellmodule', 'helper.rb'))
 
 Puppet::Type.type(:pspackageprovider).provide :powershellcore do
   confine operatingsystem: :windows
