@@ -1,5 +1,7 @@
 ## Development
 
+## 2.2.1 (2021-02-04)
+
 * Replaced the require call for `puppet_x` helper library to use a dynamically
   expanded path. This works around limitations in Puppet Ruby `LOAD_PATH`
   with error `no such file to load -- puppet_x/encore/powershellmodule/helper`.
