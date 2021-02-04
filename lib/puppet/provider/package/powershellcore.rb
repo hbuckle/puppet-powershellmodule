@@ -1,6 +1,6 @@
 require 'puppet/provider/package'
 require 'json'
-require 'puppet_x/encore/powershellmodule/helper'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'encore', 'powershellmodule', 'helper.rb'))
 
 Puppet::Type.type(:package).provide :powershellcore, parent: Puppet::Provider::Package do
   initvars
